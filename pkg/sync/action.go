@@ -71,7 +71,7 @@ func setupActions(cfg *types.Config) (actions []syncAction) {
 }
 
 type syncAction interface {
-	sync(ac *actionContext) error
+	sync(ac *actionContext) (bool, error)
 	name() string
 }
 
@@ -86,14 +86,14 @@ type actionContext struct {
 
 type defaultAction struct {
 	myName string
-	doSync func(ac *actionContext) error
+	doSync func(ac *actionContext) (bool, error)
 }
 
-func action(name string, f func(ac *actionContext) error) syncAction {
+func action(name string, f func(ac *actionContext) (bool, error)) syncAction {
 	return &defaultAction{myName: name, doSync: f}
 }
 
-func (d *defaultAction) sync(ac *actionContext) error {
+func (d *defaultAction) sync(ac *actionContext) (bool, error) {
 	return d.doSync(ac)
 }
 

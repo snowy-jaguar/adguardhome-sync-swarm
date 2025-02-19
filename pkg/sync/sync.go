@@ -300,7 +300,7 @@ func (w *worker) syncTo(l *zap.SugaredLogger, o *origin, replica types.AdGuardIn
 		replica:       replica,
 	}
 	for _, action := range w.actions {
-		if err := action.sync(ac); err != nil {
+		if _, err := action.sync(ac); err != nil {
 			rl.With("error", err).Errorf("Error syncing %s", action.name())
 			if !w.cfg.ContinueOnError {
 				return
