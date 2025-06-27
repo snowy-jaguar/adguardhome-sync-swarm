@@ -22,7 +22,7 @@ VERSION=$(date +%Y.%m)
 BUILD=$(date -u +"%Y%m%dT%H%M%SZ")
 
 # Image metadata
-IMAGE_NAME="ghcr.io/snowy-jaguar/adguardhome-sync-swarm"
+IMAGE_NAME="ghcr.io/snowy-jaguar/adguardhomesync-swarm"
 
 # Platforms to build for
 PLATFORMS="linux/amd64,linux/arm64"

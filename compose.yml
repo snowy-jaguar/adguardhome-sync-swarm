@@ -16,8 +16,8 @@
 
 ---
 services:
-  adguardhome-sync-swarm:
-    image: ghcr.io/snowy-jaguar/adguardhome-sync-swarm:latest
+  adguardhomesync-swarm:
+    image: ghcr.io/snowy-jaguar/adguardhomesync-swarm:latest
 #    container_name: adguardhome-sync # Uncomment if you want to set a specific container name, Incopatible with Swarm
     volumes:
       - /path/to/appdata/config/:/config/

@@ -31,8 +31,8 @@ ENV GO111MODULE=on \
 COPY . /go/src/app/
 
 RUN go build -a -installsuffix cgo -ldflags="-w -s \
-  -X github.com/snowy-jaguar/adguardhome-sync-swarm/version.Version=${VERSION} \
-  -X github.com/snowy-jaguar/adguardhome-sync-swarm/version.Build=${BUILD}" \
+  -X github.com/snowy-jaguar/adguardhomesync-swarm/version.Version=${VERSION} \
+  -X github.com/snowy-jaguar/adguardhomesync-swarm/version.Build=${BUILD}" \
   -o adguardhome-sync .
 
 

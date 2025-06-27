@@ -23,7 +23,7 @@ builds:
   - env:
       - CGO_ENABLED=0
     ldflags:
-      - -s -w -X github.com/snowy-jaguar/adguardhome-sync-swarm/version.Version={{.Version}} -X github.com/snowy-jaguar/adguardhome-sync-swarm/version.Build={{.Date}}
+      - -s -w -X github.com/snowy-jaguar/adguardhomesync-swarm/version.Version={{.Version}} -X github.com/snowy-jaguar/adguardhomesync-swarm/version.Build={{.Date}}
     goos:
       - linux
       - windows

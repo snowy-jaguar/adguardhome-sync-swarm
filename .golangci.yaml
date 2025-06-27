@@ -215,13 +215,13 @@ formatters:
       sections:
         - standard
         - default
-        - prefix(github.com/snowy-jaguar/adguardhome-sync-swarm)
+        - prefix(github.com/snowy-jaguar/adguardhomesync-swarm)
     gofumpt:
-      module-path: github.com/snowy-jaguar/adguardhome-sync-swarm
+      module-path: github.com/snowy-jaguar/adguardhomesync-swarm
       extra-rules: true
     goimports:
       local-prefixes:
-        - github.com/snowy-jaguar/adguardhome-sync-swarm
+        - github.com/snowy-jaguar/adguardhomesync-swarm
     golines:
       max-len: 128
       tab-len: 4
