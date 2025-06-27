@@ -1,0 +1,103 @@
+services:
+  adguardhome-sync-swarm:
+    image: ghcr.io/snowy-jaguar/adguardhome-sync-swarm:latest
+#    container_name: adguardhome-sync # Uncomment if you want to set a specific container name, Incopatible with Swarm
+    command: run --config /config/adguardhome-sync.yaml
+    volumes:
+      - /path/to/appdata/config/:/config/
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/control/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      environment:
+        # Descriptions of the environment variables can be found in the README.md file of the repository.
+        # Recomended environment variables to set:
+        ORIGIN_URL: ${ORIGIN_URL:-<http://origin-adguard.example.com|http://adguard.home.ip.addreess>}
+        REPLICA1_URL: ${REPLICA1_URL:-<http://replica-adguard.example.com|http://adguard.home.replica.addreess>}
+        REPLICA2_URL: ${REPLICA2_URL:-<http://replica-adguard.example.com|http://adguard.home.replica.addreess>}
+        ORIGIN_USERNAME: ${ORIGIN_USERNAME:-<your adguard username>}
+        REPLICA1_USERNAME: ${REPLICA1_USERNAME:-<your adguard username>}
+        REPLICA2_USERNAME: ${REPLICA2_USERNAME:-<your adguard username>}
+        ORIGIN_PASSWORD: ${ORIGIN_PASSWORD:-<your adguard password>}
+        REPLICA1_PASSWORD: ${REPLICA1_PASSWORD:-<your adguard password>}
+        REPLICA2_PASSWORD: ${REPLICA2_PASSWORD:-<your adguard password>}
+        ORIGIN_AUTO_SETUP: ${ORIGIN_AUTO_SETUP:-false}
+        REPLICA1_AUTO_SETUP: ${REPLICA1_AUTO_SETUP:-false}
+        REPLICA2_AUTO_SETUP: ${REPLICA2_AUTO_SETUP:-false}
+        CRON: ${CRON:-"0 * * * *"} # Run every hour
+        RUN_ON_START: ${RUN_ON_START:-true}
+        API_USERNAME: ${API_USERNAME:-<your adguard sync username>}
+        API_PASSWORD: ${API_PASSWORD:-<your adguard sync password>}
+        API_DARK_MODE: ${API_DARK_MODE:-true}
+        API_METRICS_ENABLED: ${API_METRICS_ENABLED:-true}
+        # Optional environment variables to set:
+        ORIGIN_WEB_URL: ${ORIGIN_WEB_URL:-<http://origin-adguard.example.com|http://adguard.home.ip.addreess>}
+        ORIGIN_API_PATH: ${ORIGIN_API_PATH:-/control}
+        ORIGIN_USERNAME: ${ORIGIN_USERNAME:-<your adguard username>}
+        ORIGIN_PASSWORD: ${ORIGIN_PASSWORD:-<your adguard password>}
+        ORIGIN_COOKIE: ${ORIGIN_COOKIE:-<your adguard cookie>}
+        ORIGIN_REQUEST_HEADERS: ${ORIGIN_REQUEST_HEADERS:-{}}
+        ORIGIN_INSECURE_SKIP_VERIFY: ${ORIGIN_INSECURE_SKIP_VERIFY:-false}
+        ORIGIN_AUTO_SETUP: ${ORIGIN_AUTO_SETUP:-false}
+        ORIGIN_INTERFACE_NAME: ${ORIGIN_INTERFACE_NAME:-eth0}
+        ORIGIN_DHCP_SERVER_ENABLED: ${ORIGIN_DHCP_SERVER_ENABLED:-false}
+        REPLICA#_URL: ${REPLICA#_URL:-<http://replica-adguard.example.com|http://adguard.home.replica.addreess>}
+        REPLICA#_WEB_URL: ${REPLICA#_WEB_URL:-<http://replica-adguard.example.com|http://adguard.home.replica.addreess>}
+        REPLICA#_API_PATH: ${REPLICA#_API_PATH:-/control}
+        REPLICA#_USERNAME: ${REPLICA#_USERNAME:-<your adguard username>}
+        REPLICA#_PASSWORD: ${REPLICA#_PASSWORD:-<your adguard password>}
+        REPLICA#_COOKIE: ${REPLICA#_COOKIE:-<your adguard cookie>}
+        REPLICA#_REQUEST_HEADERS: ${REPLICA#_REQUEST_HEADERS:-{}}
+        REPLICA#_INSECURE_SKIP_VERIFY: ${REPLICA#_INSECURE_SKIP_VERIFY:-false}
+        REPLICA#_AUTO_SETUP: ${REPLICA#_AUTO_SETUP:-false}
+        REPLICA#_INTERFACE_NAME: ${REPLICA#_INTERFACE_NAME:-eth0}
+        REPLICA#_DHCP_SERVER_ENABLED: ${REPLICA#_DHCP_SERVER_ENABLED:-false}
+        CRON: ${CRON:-"0 * * * *"} # Run every hour
+        RUN_ON_START: ${RUN_ON_START:-true}
+        PRINT_CONFIG_ONLY: ${PRINT_CONFIG_ONLY:-false}
+        CONTINUE_ON_ERROR: ${CONTINUE_ON_ERROR:-false}
+        API_PORT: ${API_PORT:-8080}
+        API_USERNAME: ${API_USERNAME:-<your adguard username>}
+        API_PASSWORD: ${API_PASSWORD:-<your adguard password>}
+        API_DARK_MODE: ${API_DARK_MODE:-true}
+        API_METRICS_ENABLED: ${API_METRICS_ENABLED:-true}
+        API_METRICS_SCRAPE_INTERVAL: ${API_METRICS_SCRAPE_INTERVAL:-60}
+        API_METRICS_QUERY_LOG_LIMIT: ${API_METRICS_QUERY_LOG_LIMIT:-1000}
+        API_TLS_CERT_DIR: ${API_TLS_CERT_DIR:-/etc/ssl/certs}
+        API_TLS_CERT_NAME: ${API_TLS_CERT_NAME:-adguard.crt}
+        API_TLS_KEY_NAME: ${API_TLS_KEY_NAME:-adguard.key}
+        FEATURES_DNS_ACCESS_LISTS: ${FEATURES_DNS_ACCESS_LISTS:-false}
+        FEATURES_DNS_SERVER_CONFIG: ${FEATURES_DNS_SERVER_CONFIG:-false}
+        FEATURES_DNS_REWRITES: ${FEATURES_DNS_REWRITES:-false}
+        FEATURES_DHCP_SERVER_CONFIG: ${FEATURES_DHCP_SERVER_CONFIG:-false}
+        FEATURES_DHCP_STATIC_LEASES: ${FEATURES_DHCP_STATIC_LEASES:-false}
+        FEATURES_GENERAL_SETTINGS: ${FEATURES_GENERAL_SETTINGS:-false}
+        FEATURES_QUERY_LOG_CONFIG: ${FEATURES_QUERY_LOG_CONFIG:-false}
+        FEATURES_STATS_CONFIG: ${FEATURES_STATS_CONFIG:-false}
+        FEATURES_CLIENT_SETTINGS: ${FEATURES_CLIENT_SETTINGS:-false}
+        FEATURES_SERVICES: ${FEATURES_SERVICES:-false}
+        FEATURES_FILTERS: ${FEATURES_FILTERS:-false}
+        FEATURES_THEME: ${FEATURES_THEME:-false}
+      secrets:
+        - adguardhome-repeated-username # Set this if all of your adguard instances use the same username
+        - adguardhome-repeated-password # Set this if all of your adguard instances use the same password
+        - adguardhomesync-repeated-instances # Set this to declare which instances use the same username and password
+        - adguardhomesync-api-username
+        - adguardhomesync-api-password
+        - adguardhomesync-origin-username
+        - adguardhomesync-origin-password
+        - adguardhomesync-replica1-username
+        - adguardhomesync-replica1-password
+        - adguardhomesync-replica2-username
+        - adguardhomesync-replica2-password
+      deploy:
+        replicas: 1
+        restart_policy:
+          condition: unless-stopped
+        placement:
+          constraints:
+            - node.role == manager # This service should run on a manager node in the swarm
