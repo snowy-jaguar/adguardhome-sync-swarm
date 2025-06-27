@@ -19,7 +19,14 @@ ENV GO111MODULE=on \
 
 COPY . /go/src/app/
 
-RUN go build -a -installsuffix cgo -ldflags="-w -s -X github.com/bakito/adguardhome-sync/version.Version=${VERSION} -X github.com/bakito/adguardhome-sync/version.Build=${BUILD}" -o adguardhome-sync .
+ARG VERSION=main
+ARG BUILD="N/A"
+
+RUN go build -a -installsuffix cgo -ldflags="-w -s \
+  -X github.com/snowy-jaguar/adguardhome-sync-swarm/version.Version=${VERSION} \
+  -X github.com/snowy-jaguar/adguardhome-sync-swarm/version.Build=${BUILD}" \
+  -o adguardhome-sync .
+
 
 RUN go version && upx -q adguardhome-sync
 

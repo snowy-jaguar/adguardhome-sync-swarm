@@ -1,4 +1,4 @@
-module github.com/bakito/adguardhome-sync
+module github.com/snowy-jaguar/adguardhome-sync-swarm
 
 go 1.24.2
 
