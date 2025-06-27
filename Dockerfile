@@ -1,3 +1,9 @@
+# Dockerfile for adguardhome-sync
+# This Dockerfile builds a Go application and packages it into a minimal Alpine Linux image.
+# The application is a sync tool for AdGuard Home, which allows syncing DNS records and other
+# configurations with an AdGuard Home instance.
+
+##### Building the application #####
 FROM golang:1.24-alpine AS builder
 
 WORKDIR /go/src/app
@@ -17,10 +23,11 @@ RUN go build -a -installsuffix cgo -ldflags="-w -s -X github.com/bakito/adguardh
 
 RUN go version && upx -q adguardhome-sync
 
-# Final image (using alpine to allow entrypoint scripts)
+##### Creating the final image #####
 FROM alpine:3.18
 
-LABEL maintainer="snowy-jaguar <github@snowy-jaguar.com>"
+LABEL maintainer="snowy-jaguar <contact@snowyjaguar.xyz>" \
+      org.opencontainers.image.authors="snowy-jaguar"
 
 
 RUN apk add --no-cache ca-certificates curl tzdata
