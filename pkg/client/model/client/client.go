@@ -1,3 +1,19 @@
+// Copyright 2025 snowy-jaguar
+// Contact: @snowyjaguar (Discord)
+// Contact: contact@snowyjaguar.xyz (Email)
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package client
 
 import (
@@ -13,9 +29,9 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/bakito/adguardhome-sync/pkg/client/model"
-	"github.com/bakito/adguardhome-sync/pkg/log"
-	"github.com/bakito/adguardhome-sync/pkg/types"
+	"github.com/snowy-jaguar/adguardhomesync-swarm/pkg/client/model"
+	"github.com/snowy-jaguar/adguardhomesync-swarm/pkg/log"
+	"github.com/snowy-jaguar/adguardhomesync-swarm/pkg/types"
 )
 
 var l = log.GetLogger("client")
