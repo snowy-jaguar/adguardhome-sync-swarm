@@ -20,8 +20,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/snowy-jaguar/adguardhomesync-swarm/config"
-	"github.com/snowy-jaguar/adguardhomesync-swarm/log"
-	"github.com/snowy-jaguar/adguardhomesync-swarm/sync"
+	"github.com/snowy-jaguar/adguardhomesync-swarm/pkg/log"
+	"github.com/snowy-jaguar/adguardhomesync-swarm/pkg/sync"
 )
 
 // runCmd represents the run command.

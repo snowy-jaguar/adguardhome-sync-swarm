@@ -22,7 +22,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/snowy-jaguar/adguardhomesync-swarm/log"
+	"github.com/snowy-jaguar/adguardhomesync-swarm/pkg/log"
 	"github.com/snowy-jaguar/adguardhomesync-swarm/version"
 )
 
