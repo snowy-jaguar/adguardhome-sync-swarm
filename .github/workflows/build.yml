@@ -50,6 +50,7 @@ jobs:
           echo "BUILD=$(date -u +'%Y%m%dT%H%M%SZ')" >> "$GITHUB_ENV"
 
       - name: Build and push image
+        id: docker_build
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -63,17 +64,17 @@ jobs:
             VERSION=${{ env.VERSION }}
             BUILD=${{ env.BUILD }}
       - name: Image digest
-        run: echo "Image digest: ${{ steps.docker_build.outputs.digest }}"
+        run: "echo 'Image digest: ${{ steps.docker_build.outputs.digest }}'"
       - name: Image tags
-        run: echo "Image tags: ghcr.io/${{ github.repository }}:${{ env.VERSION }}, ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}, ghcr.io/${{ github.repository }}:latest"
+        run: "echo 'Image tags: ghcr.io/${{ github.repository }}:${{ env.VERSION }}, ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}, ghcr.io/${{ github.repository }}:latest'"
       - name: Image URL
-        run: echo "Image URL: ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}"
+        run: "echo 'Image URL: ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}'"
       - name: Image URL for latest
-        run: echo "Image URL for latest: ghcr.io/${{ github.repository }}:latest"
+        run: "echo 'Image URL for latest: ghcr.io/${{ github.repository }}:latest'"
       - name: Image URL for version
-        run: echo "Image URL for version: ghcr.io/${{ github.repository }}:${{ env.VERSION }}"
+        run: "echo 'Image URL for version: ghcr.io/${{ github.repository }}:${{ env.VERSION }}'"
       - name: Image URL for version with build
-        run: echo "Image URL for version with build: ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}"
+        run: "echo 'Image URL for version with build: ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}'"
 
       - name: Generate changelog between tags
         run: |
