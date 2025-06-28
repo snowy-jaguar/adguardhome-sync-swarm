@@ -1,15 +1,8 @@
 name: docker-images
 
+# DISABLED: This workflow is preserved for upstream sync but is not active in this fork.
 on:
-  workflow_dispatch: # allows manual triggering
-  schedule:
-    - cron: '0 0 * * *'
-  #pull_request:
-  #  branches:
-  #    - main
-  release:
-    types:
-      - published
+  workflow_call: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -59,7 +52,7 @@ jobs:
           context: .
           pull: true
           push: true
-          tags: quay.io/bakito/adguardhome-sync:${{ matrix.build.tagPrefix }}latest,quay.io/bakito/adguardhome-sync:${{ matrix.build.tagPrefix }}${{ github.event.release.tag_name }},ghcr.io/bakito/adguardhome-sync:${{ matrix.build.tagPrefix }}latest,ghcr.io/bakito/adguardhome-sync:${{ matrix.build.tagPrefix }}${{ github.event.release.tag_name }}
+          tags: quay.io/snowy-jaguar/adguardhomesync-swarm:${{ matrix.build.tagPrefix }}latest,quay.io/snowy-jaguar/adguardhomesync-swarm:${{ matrix.build.tagPrefix }}${{ github.event.release.tag_name }},ghcr.io/snowy-jaguar/adguardhomesync-swarm:${{ matrix.build.tagPrefix }}latest,ghcr.io/snowy-jaguar/adguardhomesync-swarm:${{ matrix.build.tagPrefix }}${{ github.event.release.tag_name }}
           platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/arm64,linux/ppc64le
           provenance: false
           build-args: |
@@ -78,7 +71,7 @@ jobs:
           context: .
           pull: true
           push: ${{ github.ref == 'refs/heads/main' }}
-          tags: quay.io/bakito/adguardhome-sync:${{ matrix.build.tagPrefix }}main,ghcr.io/bakito/adguardhome-sync:${{ matrix.build.tagPrefix }}main
+          tags: quay.io/snowy-jaguar/adguardhomesync:${{ matrix.build.tagPrefix }}main,ghcr.io/snowy-jaguar/adguardhomesync:${{ matrix.build.tagPrefix }}main
           platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/arm64,linux/ppc64le
           provenance: false
           build-args: |
