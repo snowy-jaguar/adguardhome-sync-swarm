@@ -17,18 +17,23 @@
 #!/bin/sh
 set -e
 
+# Export all secrets as environment variables
 for secret in /run/secrets/*; do
-  filename=$(basename "$secret")
-  value=$(cat "$secret")
-
-  # Normalize the secret name to uppercase
-  varname=$(echo "$filename" | tr '[:lower:]' '[:upper:]')
-
-  # If prefixed with ADGUARDHOMESYNC_, strip it
-  clean_name=$(echo "$varname" | sed -E 's/^ADGUARDHOMESYNC_//I')
-
-  # Export only the clean, normalized name
-  export "$clean_name=$value"
+  varname=$(basename "$secret" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+  export "${varname}=$(cat "$secret")"
 done
 
+# Apply shared username/password to listed targets
+if [ -n "$ADGUARDHOMESYNC_SHARED_TARGETS" ]; then
+  IFS=',' read -r -a instances <<< "$ADGUARDHOMESYNC_SHARED_TARGETS"
+
+  for instance in "${instances[@]}"; do
+    upper_instance=$(echo "$instance" | tr '[:lower:]' '[:upper:]')
+
+    [ -n "$ADGUARDHOME_SHARED_USERNAME" ] && export "${upper_instance}_USERNAME=${ADGUARDHOME_SHARED_USERNAME}"
+    [ -n "$ADGUARDHOME_SHARED_PASSWORD" ] && export "${upper_instance}_PASSWORD=${ADGUARDHOME_SHARED_PASSWORD}"
+  done
+fi
+
+# Run the main command
 exec "$@"
