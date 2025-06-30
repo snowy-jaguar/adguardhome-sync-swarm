@@ -5,14 +5,8 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 ---
 
@@ -47,7 +41,9 @@ jobs:
       - name: Extract date-based version info
         run: |
           echo "VERSION=$(date +'%Y.%m')" >> "$GITHUB_ENV"
-          echo "BUILD=$(date -u +'%Y%m%dT%H%M%SZ')" >> "$GITHUB_ENV"
+          echo "DATE_TAG=$(date +'%Y.%m.%d')" >> "$GITHUB_ENV"
+          echo "BUILD=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+          echo "BUILD_RAW=$(date -u +'%Y%m%dT%H%M%SZ')" >> "$GITHUB_ENV"
 
       - name: Build and push image
         id: docker_build
@@ -57,33 +53,79 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:${{ env.VERSION }}
-            ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}
             ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ env.VERSION }}
+            ghcr.io/${{ github.repository }}:${{ env.DATE_TAG }}
+            ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}
+            ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD_RAW }}
           build-args: |
             VERSION=${{ env.VERSION }}
             BUILD=${{ env.BUILD }}
-      - name: Image digest
-        run: "echo 'Image digest: ${{ steps.docker_build.outputs.digest }}'"
-      - name: Image tags
-        run: "echo 'Image tags: ghcr.io/${{ github.repository }}:${{ env.VERSION }}, ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}, ghcr.io/${{ github.repository }}:latest'"
-      - name: Image URL
-        run: "echo 'Image URL: ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}'"
-      - name: Image URL for latest
-        run: "echo 'Image URL for latest: ghcr.io/${{ github.repository }}:latest'"
-      - name: Image URL for version
-        run: "echo 'Image URL for version: ghcr.io/${{ github.repository }}:${{ env.VERSION }}'"
-      - name: Image URL for version with build
-        run: "echo 'Image URL for version with build: ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}'"
 
-      - name: Generate changelog between tags
+      - name: Generate binaries
         run: |
-          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-          git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:"- %s (%an)" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          mkdir -p dist
+          GOOS=linux GOARCH=amd64 go build -o dist/adguardhomesync-swarm-linux-amd64
+          sha256sum dist/adguardhomesync-swarm-linux-amd64 > dist/adguardhomesync-swarm-linux-amd64.sha256
+
+      - name: Check and optionally generate CHANGELOG.md
+        run: |
+          if [ ! -f CHANGELOG.md ]; then
+            echo "CHANGELOG.md not found. Generating..."
+            {
+              echo "# Changelog"
+              echo ""
+              echo "## ${BUILD}"
+              echo "_Generated on ${DATE_TAG}_"
+              echo ""
+              git log $(git describe --tags --abbrev=0)..HEAD --no-merges --pretty=format:"- %s (%an)"
+              echo ""
+            } > CHANGELOG.md
+          else
+            echo "CHANGELOG.md already exists. Skipping generation."
+          fi
+
+      - name: Generate release notes
+        run: |
+          {
+            echo "RELEASE_BODY<<EOF"
+            echo "# 📦 Docker Image Release"
+            echo ""
+            echo "**Tag:** \`${{ env.BUILD }}\`"
+            echo "**Version:** \`${{ env.VERSION }}\`"
+            echo "**Date:** \`${{ env.DATE_TAG }}\`"
+            echo ""
+            echo "## 🐳 Docker Tags"
+            echo "- \`ghcr.io/${{ github.repository }}:latest\`"
+            echo "- \`ghcr.io/${{ github.repository }}:${{ env.VERSION }}\`"
+            echo "- \`ghcr.io/${{ github.repository }}:${{ env.DATE_TAG }}\`"
+            echo "- \`ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}\`"
+            echo "- \`ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD_RAW }}\`"
+            echo ""
+            echo "## 📥 Docker Pull"
+            echo '```bash'
+            echo "docker pull ghcr.io/${{ github.repository }}:${{ env.VERSION }}"
+            echo "docker pull ghcr.io/${{ github.repository }}:${{ env.DATE_TAG }}"
+            echo "docker pull ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}"
+            echo '```'
+            echo ""
+            echo "## 📝 Changes"
+            git log --no-merges --pretty=format:"- %s (%an)" $(git describe --tags --abbrev=0)..HEAD
+            echo ""
+            echo "---"
+            echo "For licensing details, see [NOTICE.md](https://github.com/${{ github.repository }}/blob/main/NOTICE.md)"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.VERSION }}
-          name: Release ${{ env.VERSION }}
-          body: ${{ env.CHANGELOG }}
+          tag_name: ${{ env.BUILD }}
+          name: Release ${{ env.BUILD }}
+          body: ${{ env.RELEASE_BODY }}
+          files: |
+            dist/adguardhomesync-swarm-linux-amd64
+            dist/adguardhomesync-swarm-linux-amd64.sha256
+            CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
