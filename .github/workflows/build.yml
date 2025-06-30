@@ -42,7 +42,7 @@ jobs:
         run: |
           echo "VERSION=$(date +'%Y.%m')" >> "$GITHUB_ENV"
           echo "DATE_TAG=$(date +'%Y.%m.%d')" >> "$GITHUB_ENV"
-          echo "BUILD=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+          echo "BUILD=$(date -u +'%Y.%m.%d-T%H.%M.%SZ')" >> "$GITHUB_ENV"
           echo "BUILD_RAW=$(date -u +'%Y%m%dT%H%M%SZ')" >> "$GITHUB_ENV"
 
       - name: Build and push image
@@ -56,8 +56,8 @@ jobs:
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ env.VERSION }}
             ghcr.io/${{ github.repository }}:${{ env.DATE_TAG }}
-            ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD }}
-            ghcr.io/${{ github.repository }}:${{ env.VERSION }}-${{ env.BUILD_RAW }}
+            ghcr.io/${{ github.repository }}:${{ env.BUILD }}
+            ghcr.io/${{ github.repository }}:${{ env.BUILD_RAW }}
           build-args: |
             VERSION=${{ env.VERSION }}
             BUILD=${{ env.BUILD }}
