@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 set -e
 
 log() {
@@ -28,38 +27,36 @@ for secret in /run/secrets/*; do
   export "${varname}=$(cat "$secret")"
 done
 
-# Apply shared credentials to targets (username/password split)
+# Apply shared credentials to targets (username/password split or combined)
 if [ -n "$ADGUARDHOME_SHARED_TARGETS" ]; then
-  IFS=',' read -r -a instances <<EOF
-$ADGUARDHOME_SHARED_TARGETS
-EOF
-
-  for instance in "${instances[@]}"; do
+  IFS=',' set -- $ADGUARDHOME_SHARED_TARGETS
+  for instance in "$@"; do
     upper_instance=$(echo "$instance" | tr '[:lower:]' '[:upper:]')
 
-    # Apply shared username
+    # Shared username
     if [ -n "$ADGUARDHOME_SHARED_USERNAME" ]; then
       export "${upper_instance}_USERNAME=$ADGUARDHOME_SHARED_USERNAME"
       log "Set ${upper_instance}_USERNAME from shared username"
     fi
 
-    # Apply shared password
+    # Shared password
     if [ -n "$ADGUARDHOME_SHARED_PASSWORD" ]; then
       export "${upper_instance}_PASSWORD=$ADGUARDHOME_SHARED_PASSWORD"
       log "Set ${upper_instance}_PASSWORD from shared password"
     fi
 
-    # Apply shared credentials (username + password in one secret)
+    # Shared combined credentials
     if [ -n "$ADGUARDHOME_SHARED_CREDENTIALS" ]; then
       cred_val="$ADGUARDHOME_SHARED_CREDENTIALS"
       if echo "$cred_val" | grep -q ':::'; then
         username=$(echo "$cred_val" | cut -d':' -f1)
         password=$(echo "$cred_val" | cut -d':' -f4)
       else
-        username=$(printf "%s" "$cred_val" | sed -n '1p')
-        password=$(printf "%s" "$cred_val" | sed -n '2p')
+        IFS='
+' read username password <<EOF
+$cred_val
+EOF
       fi
-
       export "${upper_instance}_USERNAME=$username"
       export "${upper_instance}_PASSWORD=$password"
       log "Set ${upper_instance}_USERNAME and ${upper_instance}_PASSWORD from shared credentials"
@@ -73,8 +70,10 @@ if [ -n "$ORIGIN_CREDENTIALS" ] && [ -z "$ORIGIN_USERNAME" ] && [ -z "$ORIGIN_PA
     ORIGIN_USERNAME=$(echo "$ORIGIN_CREDENTIALS" | cut -d':' -f1)
     ORIGIN_PASSWORD=$(echo "$ORIGIN_CREDENTIALS" | cut -d':' -f4)
   else
-    ORIGIN_USERNAME=$(printf "%s" "$ORIGIN_CREDENTIALS" | sed -n '1p')
-    ORIGIN_PASSWORD=$(printf "%s" "$ORIGIN_CREDENTIALS" | sed -n '2p')
+    IFS='
+' read ORIGIN_USERNAME ORIGIN_PASSWORD <<EOF
+$ORIGIN_CREDENTIALS
+EOF
   fi
   export ORIGIN_USERNAME ORIGIN_PASSWORD
   log "Set ORIGIN_USERNAME and ORIGIN_PASSWORD from ORIGIN_CREDENTIALS"
@@ -95,8 +94,10 @@ env | grep -E '^REPLICA[0-9]+_CREDENTIALS=' | while IFS='=' read -r full_var val
       username=$(echo "$value" | cut -d':' -f1)
       password=$(echo "$value" | cut -d':' -f4)
     else
-      username=$(printf "%s" "$value" | sed -n '1p')
-      password=$(printf "%s" "$value" | sed -n '2p')
+      IFS='
+' read username password <<EOF
+$value
+EOF
     fi
     export "${user_var}=$username"
     export "${pass_var}=$password"
