@@ -21,51 +21,56 @@ log() {
   echo "[entrypoint] $*"
 }
 
-# Export all secrets as environment variables
+# Import secrets as environment variables
 log "Importing secrets from /run/secrets..."
 for secret in /run/secrets/*; do
   varname=$(basename "$secret" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
   export "${varname}=$(cat "$secret")"
 done
 
-# Apply shared username/password to listed targets
-if [ -n "$ADGUARDHOMESYNC_SHARED_TARGETS" ]; then
-  IFS=',' read -r -a instances <<< "$ADGUARDHOMESYNC_SHARED_TARGETS"
+# Apply shared credentials to targets (username/password split)
+if [ -n "$ADGUARDHOME_SHARED_TARGETS" ]; then
+  IFS=',' read -r -a instances <<< "$ADGUARDHOME_SHARED_TARGETS"
 
   for instance in "${instances[@]}"; do
     upper_instance=$(echo "$instance" | tr '[:lower:]' '[:upper:]')
 
+    # Apply shared username
     if [ -n "$ADGUARDHOME_SHARED_USERNAME" ]; then
-      export "${upper_instance}_USERNAME=${ADGUARDHOME_SHARED_USERNAME}"
+      export "${upper_instance}_USERNAME=$ADGUARDHOME_SHARED_USERNAME"
       log "Set ${upper_instance}_USERNAME from shared username"
     fi
 
+    # Apply shared password
     if [ -n "$ADGUARDHOME_SHARED_PASSWORD" ]; then
-      export "${upper_instance}_PASSWORD=${ADGUARDHOME_SHARED_PASSWORD}"
+      export "${upper_instance}_PASSWORD=$ADGUARDHOME_SHARED_PASSWORD"
       log "Set ${upper_instance}_PASSWORD from shared password"
     fi
 
+    # Apply shared credentials (username + password in one secret)
     if [ -n "$ADGUARDHOME_SHARED_CREDENTIALS" ]; then
-      if echo "$ADGUARDHOME_SHARED_CREDENTIALS" | grep -q ':::'; then
-        username=$(echo "$ADGUARDHOME_SHARED_CREDENTIALS" | cut -d ':' -f1)
-        password=$(echo "$ADGUARDHOME_SHARED_CREDENTIALS" | cut -d ':' -f4)
+      cred_val="$ADGUARDHOME_SHARED_CREDENTIALS"
+      if echo "$cred_val" | grep -q ':::'; then
+        username=$(echo "$cred_val" | cut -d':' -f1)
+        password=$(echo "$cred_val" | cut -d':' -f4)
       else
         IFS=$'\n' read -r username password <<EOF
-$ADGUARDHOME_SHARED_CREDENTIALS
+$cred_val
 EOF
       fi
+
       export "${upper_instance}_USERNAME=$username"
       export "${upper_instance}_PASSWORD=$password"
-      log "Set ${upper_instance}_USERNAME and _PASSWORD from shared credentials"
+      log "Set ${upper_instance}_USERNAME and ${upper_instance}_PASSWORD from shared credentials"
     fi
   done
 fi
 
-# Handle ORIGIN_CREDENTIALS if ORIGIN_USERNAME / ORIGIN_PASSWORD not set
+# ORIGIN_CREDENTIALS
 if [ -n "$ORIGIN_CREDENTIALS" ] && [ -z "$ORIGIN_USERNAME" ] && [ -z "$ORIGIN_PASSWORD" ]; then
   if echo "$ORIGIN_CREDENTIALS" | grep -q ':::'; then
-    ORIGIN_USERNAME=$(echo "$ORIGIN_CREDENTIALS" | cut -d ':' -f1)
-    ORIGIN_PASSWORD=$(echo "$ORIGIN_CREDENTIALS" | cut -d ':' -f4)
+    ORIGIN_USERNAME=$(echo "$ORIGIN_CREDENTIALS" | cut -d':' -f1)
+    ORIGIN_PASSWORD=$(echo "$ORIGIN_CREDENTIALS" | cut -d':' -f4)
   else
     IFS=$'\n' read -r ORIGIN_USERNAME ORIGIN_PASSWORD <<EOF
 $ORIGIN_CREDENTIALS
@@ -73,11 +78,9 @@ EOF
   fi
   export ORIGIN_USERNAME ORIGIN_PASSWORD
   log "Set ORIGIN_USERNAME and ORIGIN_PASSWORD from ORIGIN_CREDENTIALS"
-else
-  log "Skipped ORIGIN_CREDENTIALS (already set or not provided)"
 fi
 
-# Handle REPLICA#_CREDENTIALS dynamically
+# Dynamic REPLICA#_CREDENTIALS
 log "Processing dynamic REPLICA# credentials..."
 env | grep -E '^REPLICA[0-9]+_CREDENTIALS=' | while IFS='=' read -r full_var value; do
   prefix=$(echo "$full_var" | cut -d'_' -f1)
@@ -89,8 +92,8 @@ env | grep -E '^REPLICA[0-9]+_CREDENTIALS=' | while IFS='=' read -r full_var val
 
   if [ -z "$existing_user" ] && [ -z "$existing_pass" ]; then
     if echo "$value" | grep -q ':::'; then
-      username=$(echo "$value" | cut -d ':' -f1)
-      password=$(echo "$value" | cut -d ':' -f4)
+      username=$(echo "$value" | cut -d':' -f1)
+      password=$(echo "$value" | cut -d':' -f4)
     else
       IFS=$'\n' read -r username password <<EOF
 $value
@@ -100,7 +103,7 @@ EOF
     export "${pass_var}=$password"
     log "Set ${user_var} and ${pass_var} from ${full_var}"
   else
-    log "Skipped ${full_var} (explicit credentials already set)"
+    log "Skipped ${full_var} (credentials already set)"
   fi
 done
 
