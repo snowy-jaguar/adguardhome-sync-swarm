@@ -14,6 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 set -e
 
 log() {
@@ -29,7 +30,9 @@ done
 
 # Apply shared credentials to targets (username/password split)
 if [ -n "$ADGUARDHOME_SHARED_TARGETS" ]; then
-  IFS=',' read -r -a instances <<< "$ADGUARDHOME_SHARED_TARGETS"
+  IFS=',' read -r -a instances <<EOF
+$ADGUARDHOME_SHARED_TARGETS
+EOF
 
   for instance in "${instances[@]}"; do
     upper_instance=$(echo "$instance" | tr '[:lower:]' '[:upper:]')
@@ -53,9 +56,8 @@ if [ -n "$ADGUARDHOME_SHARED_TARGETS" ]; then
         username=$(echo "$cred_val" | cut -d':' -f1)
         password=$(echo "$cred_val" | cut -d':' -f4)
       else
-        IFS=$'\n' read -r username password <<EOF
-$cred_val
-EOF
+        username=$(printf "%s" "$cred_val" | sed -n '1p')
+        password=$(printf "%s" "$cred_val" | sed -n '2p')
       fi
 
       export "${upper_instance}_USERNAME=$username"
@@ -71,9 +73,8 @@ if [ -n "$ORIGIN_CREDENTIALS" ] && [ -z "$ORIGIN_USERNAME" ] && [ -z "$ORIGIN_PA
     ORIGIN_USERNAME=$(echo "$ORIGIN_CREDENTIALS" | cut -d':' -f1)
     ORIGIN_PASSWORD=$(echo "$ORIGIN_CREDENTIALS" | cut -d':' -f4)
   else
-    IFS=$'\n' read -r ORIGIN_USERNAME ORIGIN_PASSWORD <<EOF
-$ORIGIN_CREDENTIALS
-EOF
+    ORIGIN_USERNAME=$(printf "%s" "$ORIGIN_CREDENTIALS" | sed -n '1p')
+    ORIGIN_PASSWORD=$(printf "%s" "$ORIGIN_CREDENTIALS" | sed -n '2p')
   fi
   export ORIGIN_USERNAME ORIGIN_PASSWORD
   log "Set ORIGIN_USERNAME and ORIGIN_PASSWORD from ORIGIN_CREDENTIALS"
@@ -94,9 +95,8 @@ env | grep -E '^REPLICA[0-9]+_CREDENTIALS=' | while IFS='=' read -r full_var val
       username=$(echo "$value" | cut -d':' -f1)
       password=$(echo "$value" | cut -d':' -f4)
     else
-      IFS=$'\n' read -r username password <<EOF
-$value
-EOF
+      username=$(printf "%s" "$value" | sed -n '1p')
+      password=$(printf "%s" "$value" | sed -n '2p')
     fi
     export "${user_var}=$username"
     export "${pass_var}=$password"
