@@ -29,7 +29,7 @@ done
 
 # Apply shared credentials to targets (username/password split or combined)
 if [ -n "$ADGUARDHOME_SHARED_TARGETS" ]; then
-  IFS=',' set -- $ADGUARDHOME_SHARED_TARGETS
+  IFS=','; set -- $ADGUARDHOME_SHARED_TARGETS
   for instance in "$@"; do
     upper_instance=$(echo "$instance" | tr '[:lower:]' '[:upper:]')
 
