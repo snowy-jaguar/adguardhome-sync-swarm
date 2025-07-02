@@ -3,7 +3,7 @@
 [![e2e tests](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/e2e.yaml/badge.svg)](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/e2e.yaml)
 [![Go](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/go.yml/badge.svg)](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/go.yml)
 [![Mark stale issues and pull requests](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/stale.yml/badge.svg)](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/stale.yml)
-[![Go Report Card](https://goreportcard.com/badge/snowy-jaguar/adguardhomesync-swarm)](https://goreportcard.com/report/github.com/snowy-jaguar/adguardhomesync-swarm)
+[![Go Report Card](https://goreportcard.com/badge/github.com/snowy-jaguar/adguardhomesync-swarm)](https://goreportcard.com/report/github.com/snowy-jaguar/adguardhomesync-swarm)
 [![Coverage Status](https://coveralls.io/repos/github/snowy-jaguar/adguardhomesync-swarm/badge.svg?branch=main&service=github)](https://coveralls.io/github/snowy-jaguar/adguardhomesync-swarm?branch=main)
 
 
