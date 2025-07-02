@@ -41,6 +41,8 @@ RUN go version && upx -q adguardhome-sync
 ##### Creating the final image #####
 FROM alpine:3.18
 
+ENV PATH="/opt/go:$PATH"
+
 LABEL maintainer="snowy-jaguar <contact@snowyjaguar.xyz>" \
       org.opencontainers.image.authors="snowy-jaguar"
 
