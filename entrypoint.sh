@@ -111,4 +111,4 @@ env | grep -E '^REPLICA[0-9]+_CREDENTIALS=' | while IFS='=' read -r full_var val
 done
 
 log "Starting service..."
-exec "$@"
+exec /opt/go/adguardhome-sync "$@"
