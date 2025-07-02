@@ -29,8 +29,11 @@ done
 
 # Apply shared credentials to targets (username/password split or combined)
 if [ -n "$ADGUARDHOME_SHARED_TARGETS" ]; then
-  IFS=','; set -- $ADGUARDHOME_SHARED_TARGETS
-  for instance in "$@"; do
+  IFS=',' read -r -a shared_targets <<EOF
+$ADGUARDHOME_SHARED_TARGETS
+EOF
+
+  for instance in "${shared_targets[@]}"; do
     upper_instance=$(echo "$instance" | tr '[:lower:]' '[:upper:]')
 
     # Shared username
