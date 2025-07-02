@@ -1,7 +1,10 @@
-[![Go](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/go.yml/badge.svg)](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/go.yml)
+[![Build & Push Docker Image](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/build.yml/badge.svg)](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/build.yml)
+[![CodeQL](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/codeql-analysis.yml)
 [![e2e tests](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/e2e.yaml/badge.svg)](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/e2e.yaml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/bakito/adguardhome-sync)](https://goreportcard.com/report/github.com/bakito/adguardhome-sync)
-[![Coverage Status](https://coveralls.io/repos/github/bakito/adguardhome-sync/badge.svg?branch=main&service=github)](https://coveralls.io/github/bakito/adguardhome-sync?branch=main)
+[![Go](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/go.yml/badge.svg)](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/go.yml)
+[![Mark stale issues and pull requests](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/stale.yml/badge.svg)](https://github.com/snowy-jaguar/adguardhomesync-swarm/actions/workflows/stale.yml)
+[![Go Report Card](https://goreportcard.com/badge/snowy-jaguar/adguardhomesync-swarm)](https://goreportcard.com/report/github.com/snowy-jaguar/adguardhomesync-swarm)
+[![Coverage Status](https://coveralls.io/repos/github/snowy-jaguar/adguardhomesync-swarm/badge.svg?branch=main&service=github)](https://coveralls.io/github/snowy-jaguar/adguardhomesync-swarm?branch=main)
 
 
 
@@ -35,13 +38,7 @@ installation, the admin interface will be listening on port 3000 in runtime.
 
 To skip automatic setup
 
-## Install
 
-Get from [releases](https://github.com/snowy-jaguar/adguardhomesync-swarm/releases) or install from source
-
-```bash
-go install github.com/bakito/adguardhome-sync@latest
-```
 
 ## Prerequisites
 
