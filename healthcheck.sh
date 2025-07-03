@@ -17,7 +17,7 @@
 #!/bin/sh
 
 API_PORT="${API_PORT:-8080}"
-URL="http://localhost:$API_PORT/control/status"
+URL="http://localhost:$API_PORT/control"
 API_USERNAME="${API_USERNAME:-}"
 API_PASSWORD="${API_PASSWORD:-}"
 
