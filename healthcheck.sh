@@ -23,7 +23,7 @@ API_PASSWORD="${API_PASSWORD:-}"
 
 # Log function
 log() {
-  echo "[healthcheck] $*"
+  echo "[healthcheck] $*" >&2
 }
 
 # Compose curl auth flag only if both username and password are set
