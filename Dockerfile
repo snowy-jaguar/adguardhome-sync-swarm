@@ -68,4 +68,4 @@ USER 1001
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["run", "--config", "/config/adguardhome-sync.yaml"]
 
-#HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 CMD /usr/local/bin/healthcheck.sh
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 CMD /usr/local/bin/healthcheck.sh
