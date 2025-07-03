@@ -21,6 +21,9 @@ log() {
   echo "[entrypoint] $*"
 }
 
+# List secrets
+log "Listing provided secrets"
+log ls /run/secrets/
 # Import secrets as environment variables
 log "Importing secrets from /run/secrets..."
 for secret in /run/secrets/*; do
