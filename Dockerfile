@@ -59,6 +59,7 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY healthcheck.sh /usr/local/bin/healthcheck.sh
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/healthcheck.sh
 
 EXPOSE 8080
 
@@ -67,5 +68,4 @@ USER 1001
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["run", "--config", "/config/adguardhome-sync.yaml"]
 
-RUN chmod +x /usr/local/bin/healthcheck.sh
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 CMD /usr/local/bin/healthcheck.sh
