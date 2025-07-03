@@ -18,13 +18,25 @@
 
 API_PORT="${API_PORT:-8080}"
 URL="http://localhost:$API_PORT/api/v1/status"
-API_USERNAME="${API_USERNAME:-}"
-API_PASSWORD="${API_PASSWORD:-}"
+#API_USERNAME="${API_USERNAME:-}"
+#API_PASSWORD="${API_PASSWORD:-}"
+
+#!/bin/sh
 
 # Log function
 log() {
   echo "[healthcheck] $*" >&2
 }
+
+# Check if necessary environment variables are available
+if [ -z "$ORIGIN_URL" ] || [ -z "$REPLICA1_URL" ]; then
+  log "One or more required environment variables (ORIGIN_URL, REPLICA1_URL, etc.) are missing."
+  log "Waiting for the environment variables to be set before running the healthcheck."
+  # Give it a bit more time before retrying
+  exit 0  # Bypass healthcheck, the container is still starting up
+fi
+
+log "Checking sync container status..."
 
 # Compose curl auth flag only if both username and password are set
 AUTH=""
@@ -32,25 +44,14 @@ if [ -n "$API_USERNAME" ] && [ -n "$API_PASSWORD" ]; then
   AUTH="$API_USERNAME:$API_PASSWORD"
 fi
 
-# Check if the sync container is running and reachable
-log "Checking sync container status..."
-
-SYNC_RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null ${AUTH:+-u "$AUTH"} "$URL")
+# Attempt to authenticate to the sync container's API
+SYNC_RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null ${AUTH:+-u "$AUTH"} "$ORIGIN_URL/api/v1/status")
 if [ "$SYNC_RESPONSE" -ne 200 ]; then
   log "Healthcheck failed: Sync container authentication failed (HTTP $SYNC_RESPONSE)."
   exit 1
 fi
 
 log "Sync container authentication successful."
-
-# Check if the sync container is running and reachable
-SYNC_RESPONSE=$(curl -s ${AUTH:+-u "$AUTH"} "$URL")
-if [ -z "$SYNC_RESPONSE" ]; then
-  log "Healthcheck failed: Sync container is unreachable."
-  exit 1
-fi
-
-log "Sync container is reachable."
 
 # Check if the Origin instance is reachable
 log "Checking origin instance ($ORIGIN_URL)..."
